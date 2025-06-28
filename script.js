@@ -5,14 +5,61 @@ let score = 0;
 let timer = 30;
 let timerInterval;
 
+// High score logic
+let highScore = 0;
+function loadHighScore() {
+  const stored = localStorage.getItem('cw_high_score');
+  highScore = stored ? parseInt(stored, 10) : 0;
+  const hsElem = document.getElementById("high-score");
+  if (hsElem) hsElem.textContent = highScore;
+}
+function saveHighScore(newScore) {
+  if (newScore > highScore) {
+    highScore = newScore;
+    localStorage.setItem('cw_high_score', highScore);
+    const hsElem = document.getElementById("high-score");
+    if (hsElem) hsElem.textContent = highScore;
+  }
+}
+
+// Difficulty settings for drop interval and fall speed
+const DIFFICULTY_SETTINGS = {
+  easy:   { dropInterval: 1300, dropFallDuration: 6.5, canFallDuration: 8 },
+  medium: { dropInterval: 1000, dropFallDuration: 4,   canFallDuration: 5.5 },
+  hard:   { dropInterval: 700,  dropFallDuration: 2.2, canFallDuration: 3 }
+};
+
+let currentDifficulty = 'medium';
+
+// Water drop sound effect
+let dropSound = null;
+let dropSoundReady = false;
+function prepareDropSound() {
+  if (!dropSound) {
+    dropSound = new Audio("water-drip-45622.mp3");
+    dropSound.preload = "auto";
+    dropSound.load();
+    dropSoundReady = true;
+  }
+}
+function playDropSound() {
+  if (dropSoundReady && dropSound) {
+    try {
+      // Clone node to allow overlapping sounds
+      dropSound.cloneNode().play();
+    } catch (e) {}
+  }
+}
+
 // Wait for button click to start the game
 document.addEventListener("DOMContentLoaded", function() {
+  loadHighScore();
   document.getElementById("start-btn").addEventListener("click", function() {
     startGame();
   });
   document.getElementById("restart-btn").addEventListener("click", function() {
     // Hide the high score screen, but do not start the game
-    const highScoreScreen = document.getElementById("high-score-screen");
+    const highScoreScreen = document.getElementById("end-game-screen");
     highScoreScreen.classList.add("d-none");
     highScoreScreen.style.display = "none";
     // Optionally reset score and timer display
@@ -20,6 +67,40 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("time").textContent = 30;
     // Do NOT call startGame here
   });
+  const resetBtn = document.getElementById("reset-high-score-btn");
+  if (resetBtn) {
+    resetBtn.addEventListener("click", function() {
+      localStorage.removeItem('cw_high_score');
+      highScore = 0;
+      const hsElem = document.getElementById("high-score");
+      if (hsElem) hsElem.textContent = highScore;
+    });
+  }
+
+  // Add restart game button logic
+  const restartGameBtn = document.getElementById("restart-game-btn");
+  if (restartGameBtn) {
+    restartGameBtn.addEventListener("click", function() {
+      // End current game if running, then start a new one
+      if (gameRunning) {
+        endGame(true); // Mark as lost, but you could also just reset
+      }
+      startGame();
+    });
+  }
+  // Difficulty menu logic
+  const difficultySelect = document.getElementById("difficulty-select");
+  if (difficultySelect) {
+    currentDifficulty = difficultySelect.value;
+    difficultySelect.addEventListener("change", function() {
+      currentDifficulty = difficultySelect.value;
+    });
+  }
+
+  // Prepare sound on first user interaction
+  document.body.addEventListener("pointerdown", prepareDropSound, { once: true });
+  document.getElementById("start-btn").addEventListener("click", prepareDropSound, { once: true });
+  document.getElementById("restart-btn").addEventListener("click", prepareDropSound, { once: true });
 });
 
 function startGame() {
@@ -31,7 +112,7 @@ function startGame() {
   timer = 30;
   document.getElementById("score").textContent = score;
   document.getElementById("time").textContent = timer;
-  const highScoreScreen = document.getElementById("high-score-screen");
+  const highScoreScreen = document.getElementById("end-game-screen");
   highScoreScreen.classList.add("d-none");
   highScoreScreen.style.display = "none";
   document.getElementById("game-container").style.pointerEvents = "auto";
@@ -39,6 +120,9 @@ function startGame() {
   // Clear any previous intervals to avoid multiple timers
   if (timerInterval) clearInterval(timerInterval);
   if (dropMaker) clearInterval(dropMaker);
+
+  // Get current difficulty settings
+  const settings = DIFFICULTY_SETTINGS[currentDifficulty] || DIFFICULTY_SETTINGS.medium;
 
   // Start timer
   timerInterval = setInterval(() => {
@@ -49,11 +133,11 @@ function startGame() {
     }
   }, 1000);
 
-  // Create new drops every second (1000 milliseconds)
-  dropMaker = setInterval(createDrop, 1000);
+  // Create new drops at the interval for the selected difficulty
+  dropMaker = setInterval(() => createDrop(settings), settings.dropInterval);
 }
 
-function createDrop() {
+function createDrop(settings = DIFFICULTY_SETTINGS.medium) {
   // 1 in 6 chance to create a water can, 1 in 8 chance to create a bad drop
   const rand = Math.random();
   let drop;
@@ -95,7 +179,7 @@ function createDrop() {
   drop.style.left = xPosition + "px";
   drop.style.position = "absolute";
   drop.style.animation = "dropFall linear forwards";
-  drop.style.animationDuration = "4s";
+  drop.style.animationDuration = (settings.dropFallDuration || 4) + "s";
   drop.style.transformOrigin = "center";
 
   document.getElementById("game-container").appendChild(drop);
@@ -121,7 +205,7 @@ function createDrop() {
     canWrapper.style.pointerEvents = 'auto';
     canWrapper.style.background = 'rgba(255,255,255,0.01)';
     canWrapper.style.animation = 'dropFall linear forwards';
-    canWrapper.style.animationDuration = '5.5s'; // slower than drops
+    canWrapper.style.animationDuration = (settings.canFallDuration || 5.5) + "s";
     canWrapper.style.transformOrigin = 'center';
 
     // Center the can image and remove its animation
@@ -140,6 +224,7 @@ function createDrop() {
     });
     function handleCanClick(e) {
       if (!gameRunning) return;
+      playDropSound();
       score += 5;
       document.getElementById("score").textContent = score;
       canWrapper.remove();
@@ -152,6 +237,7 @@ function createDrop() {
   } else if (isBadDrop) {
     drop.addEventListener("click", function handleBadDropClick(e) {
       if (!gameRunning) return;
+      playDropSound();
       score -= 5;
       document.getElementById("score").textContent = score;
       drop.remove();
@@ -163,6 +249,7 @@ function createDrop() {
   } else {
     drop.addEventListener("click", function handleDropClick(e) {
       if (!gameRunning) return;
+      playDropSound();
       score++;
       document.getElementById("score").textContent = score;
       drop.remove();
@@ -229,7 +316,8 @@ function endGame(lost = false) {
   document.getElementById("game-container").style.pointerEvents = "none";
   document.querySelectorAll('.water-drop, .water-can').forEach(d => d.remove());
   document.getElementById("final-score").textContent = score;
-  const highScoreScreen = document.getElementById("high-score-screen");
+  saveHighScore(score);
+  const highScoreScreen = document.getElementById("end-game-screen");
   highScoreScreen.classList.remove("d-none");
   highScoreScreen.style.display = "flex";
   if (lost) {

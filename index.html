@@ -11,20 +11,35 @@
 </head>
 <body>
     <div class="game-wrapper">
-        <a href="https://www.charitywater.org" target="_blank" class="cw-logo-link">
-            <img src="img/cw_logo.png" alt="Charity: Water Logo" class="cw-logo">
-        </a>
         <h1 class="game-title">Charity:Water Drop</h1>
         <p class="game-tagline">Catch the drops to hydrate the world!</p>
+        <div class="logo-difficulty-row">
+            <div class="high-score-display">
+                High Score: <span id="high-score">0</span>
+                <button id="reset-high-score-btn" class="reset-high-score-btn" title="Reset High Score">⟲</button>
+            </div>
+            <a href="https://www.charitywater.org" target="_blank" class="cw-logo-link">
+                <img src="img/cw_logo.png" alt="Charity: Water Logo" class="cw-logo">
+            </a>
+            <div class="difficulty-menu">
+                <label for="difficulty-select" style="font-weight:bold; color:#1f72b5; font-size:18px; margin-right:6px;">Difficulty:</label>
+                <select id="difficulty-select" style="font-size:16px; padding:4px 10px; border-radius:6px; border:1.5px solid #278adb;">
+                    <option value="easy">Easy</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="hard">Hard</option>
+                </select>
+            </div>
+        </div>
         <div class="score-panel">
             <div class="score">Score: <span id="score">0</span></div>
             <div class="timer">Time: <span id="time">30</span>s</div>
             <button id="start-btn">Start!</button>
+            <button id="restart-game-btn" class="restart-game-btn" title="Restart Game">⟲</button>
         </div>
         
         <div id="game-container">
         </div>
-        <div id="high-score-screen" class="d-none text-center" style="position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.95);display:none;flex-direction:column;justify-content:center;align-items:center;z-index:10;">
+        <div id="end-game-screen" class="d-none text-center" style="position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(147, 158, 232, 0.95);display:none;flex-direction:column;justify-content:center;align-items:center;z-index:10;">
             <h2>Time's Up!</h2>
             <p>Your Score: <span id="final-score">0</span></p>
             <button id="restart-btn" class="btn btn-primary">Play Again</button>

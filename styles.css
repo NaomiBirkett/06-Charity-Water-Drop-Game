@@ -33,7 +33,59 @@ body {
     font-family: 'Avenir', Arial, sans-serif;
 }
 
+.logo-difficulty-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    position: relative;
+    margin-bottom: 0.5em;
+    min-height: 70px;
+}
+.high-score-display {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 22px;
+    font-weight: bold;
+    color: #1f72b5;
+    background: #fff9e3;
+    border: 2px solid #FFC907;
+    border-radius: 8px;
+    padding: 6px 18px;
+    box-shadow: 0 2px 8px #2E9DF733;
+    font-family: 'Avenir', Arial, sans-serif;
+    z-index: 2;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.reset-high-score-btn {
+    background: none;
+    border: none;
+    color: #1f72b5;
+    font-size: 18px;
+    margin-left: 6px;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: background 0.15s;
+    outline: none;
+}
+.reset-high-score-btn:hover, .reset-high-score-btn:focus {
+    background: #FFC90733;
+    color: #F5402C;
+}
+
 .cw-logo-link {
+    flex: 0 0 auto;
+    margin: 0 auto;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -41,7 +93,7 @@ body {
     text-decoration: none;
 }
 .cw-logo {
-    height: 60px;
+    height: 80px;
     width: auto;
     margin-bottom: 8px;
     transition: transform 0.2s;
@@ -50,6 +102,37 @@ body {
 .cw-logo-link:hover .cw-logo {
     transform: scale(1.08) rotate(-6deg);
     filter: none;
+}
+
+.difficulty-menu {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.difficulty-menu label {
+    font-weight: bold;
+    color: #1f72b5;
+    font-size: 18px;
+    margin-right: 6px;
+}
+.difficulty-menu select {
+    font-size: 16px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1.5px solid #1f72b5;
+    background: #fff;
+    color: #1f72b5;
+    font-family: 'Avenir', Arial, sans-serif;
+    font-weight: bold;
+    outline: none;
+    transition: border 0.2s;
+}
+.difficulty-menu select:focus {
+    border: 2px solid #FFC907;
 }
 
 .game-title {
@@ -66,7 +149,7 @@ body {
     padding: 0.2em 0.6em;
     background: #2E9DF7;
     box-shadow: none;
-    text-shadow: none;
+    text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5);
 }
 
 .game-wrapper {
@@ -130,7 +213,7 @@ body {
 }
 
 .game-tagline {
-    color: #2E9DF7;
+    color: #1f72b5;
     font-size: 22px;
     margin-bottom: 20px;
     text-align: center;
@@ -142,7 +225,7 @@ body {
 #game-container {
     width: 800px;
     height: 600px;
-    background: linear-gradient(135deg, #E6F7FF 60%, #8BD1CB 100%);
+    background: linear-gradient(135deg, #E6F7FF 60%, #3f54cb 100%);
     border: 3px solid #2E9DF7;
     border-radius: 12px;
     position: relative;
@@ -202,6 +285,27 @@ body {
     background: transparent;
 }
 
+.restart-game-btn {
+    background: none;
+    border: none;
+    color: #1f72b5;
+    font-size: 22px;
+    margin-left: 10px;
+    cursor: pointer;
+    padding: 4px 10px;
+    border-radius: 4px;
+    transition: background 0.15s;
+    outline: none;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.restart-game-btn:hover, .restart-game-btn:focus {
+    background: #FFC90733;
+    color: #F5402C;
+}
+
 @keyframes dropFall {
     from {
         transform: translateY(-20px);
@@ -211,12 +315,134 @@ body {
     }
 }
 
+#difficulty-select {
+    margin-left: 0;
+    margin-right: 0;
+    background: #fff;
+    color: #1f72b5;
+    border: 1.5px solid #1f72b5;
+    border-radius: 6px;
+    font-size: 16px;
+    font-family: 'Avenir', Arial, sans-serif;
+    font-weight: bold;
+    outline: none;
+    transition: border 0.2s;
+}
+#difficulty-select:focus {
+    border: 2px solid #FFC907;
+}
+
 @media (max-width: 850px) {
     .game-wrapper, .score-panel, #game-container {
-        width: 95vw;
+        width: 98vw;
+        min-width: unset;
+        max-width: 100vw;
     }
-    
     #game-container {
-        height: 70vh;
+        height: 60vw;
+        min-height: 320px;
+        max-height: 70vh;
+    }
+    .score-panel {
+        flex-direction: column;
+        width: 98vw;
+        min-width: unset;
+        padding: 10px 6vw;
+        gap: 10px;
+    }
+    .game-title {
+        font-size: 7vw;
+        padding: 0.15em 0.3em;
+    }
+    .game-tagline {
+        font-size: 4vw;
+        margin-bottom: 10px;
+    }
+    .timer, .score {
+        font-size: 5vw;
+    }
+    .restart-game-btn, #start-btn, #restart-btn {
+        font-size: 4vw;
+        height: 36px;
+        padding: 8px 12px;
+    }
+    .cw-logo {
+        height: 48px;
+    }
+    .logo-difficulty-row {
+        flex-direction: column;
+        align-items: stretch;
+        position: static;
+        min-height: unset;
+        margin-bottom: 0.5em;
+        gap: 10px;
+        width: 100%;
+    }
+    .high-score-display,
+    .difficulty-menu {
+        position: static;
+        transform: none;
+        margin: 0 auto 0 auto;
+        justify-content: center;
+        width: 100%;
+        max-width: 350px;
+        font-size: 4vw;
+        padding: 8px 0;
+        gap: 8px;
+    }
+    .high-score-display {
+        /* Remove absolute positioning and z-index so it doesn't overlap logo */
+        position: static;
+        left: unset;
+        top: unset;
+        transform: none;
+        z-index: unset;
+        margin-bottom: 0;
+        order: 1;
+    }
+    .cw-logo-link {
+        position: static;
+        left: unset;
+        transform: none;
+        margin: 0 auto 0 auto;
+        order: 2;
+        z-index: 1;
+    }
+    .difficulty-menu {
+        order: 3;
+    }
+    .difficulty-menu label {
+        font-size: 3.5vw;
+    }
+    .difficulty-menu select {
+        font-size: 3.5vw;
+        padding: 4px 10px;
+    }
+    .high-score-display {
+        font-size: 4vw;
+        padding: 8px 0;
+        border-radius: 8px;
+        margin-bottom: 0;
+    }
+}
+
+/* For very small screens */
+@media (max-width: 500px) {
+    .game-title {
+        font-size: 8vw;
+    }
+    .score-panel {
+        padding: 8px 2vw;
+    }
+    #game-container {
+        height: 55vw;
+        min-height: 180px;
+    }
+    .cw-logo {
+        height: 36px;
+    }
+    .high-score-display, .difficulty-menu {
+        font-size: 5vw;
+        padding: 6px 0;
     }
 }
