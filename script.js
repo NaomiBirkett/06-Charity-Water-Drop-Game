@@ -51,6 +51,18 @@ function playDropSound() {
   }
 }
 
+function updateWaterLevel() {
+  const fill = document.getElementById("water-fill");
+  const fillPercent = Math.min(score / 50, 1); // Cap at 100%
+  console.log("Updating fill height to", fillPercent * 100 + "%");
+  fill.style.height = `${fillPercent * 100}%`;
+
+  if (fillPercent === 1) {
+    console.log("You hydrated the whole community!");
+    // Optional: trigger confetti, sound, or a fun message here
+  }
+}
+
 // Wait for button click to start the game
 document.addEventListener("DOMContentLoaded", function() {
   loadHighScore();
@@ -65,6 +77,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // Optionally reset score and timer display
     document.getElementById("score").textContent = 0;
     document.getElementById("time").textContent = 30;
+    document.getElementById("water-fill").style.height = "0%";
     // Do NOT call startGame here
   });
   const resetBtn = document.getElementById("reset-high-score-btn");
@@ -226,6 +239,7 @@ function createDrop(settings = DIFFICULTY_SETTINGS.medium) {
       if (!gameRunning) return;
       playDropSound();
       score += 5;
+      updateWaterLevel();
       document.getElementById("score").textContent = score;
       canWrapper.remove();
       canWrapper.removeEventListener("click", handleCanClick);
@@ -239,6 +253,7 @@ function createDrop(settings = DIFFICULTY_SETTINGS.medium) {
       if (!gameRunning) return;
       playDropSound();
       score -= 5;
+      updateWaterLevel();
       document.getElementById("score").textContent = score;
       drop.remove();
       drop.removeEventListener("click", handleBadDropClick);
@@ -251,6 +266,7 @@ function createDrop(settings = DIFFICULTY_SETTINGS.medium) {
       if (!gameRunning) return;
       playDropSound();
       score++;
+      updateWaterLevel();
       document.getElementById("score").textContent = score;
       drop.remove();
       drop.removeEventListener("click", handleDropClick);
@@ -327,3 +343,9 @@ function endGame(lost = false) {
     showConfetti();
   }
 }
+
+document.body.addEventListener("click", (e) => {
+  showSplash(e.clientX, e.clientY);
+  score += 1;
+  updateWaterLevel();
+});
